@@ -21,6 +21,9 @@ class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     role = models.CharField(max_length=1, choices=RoleChoices.choices, default=RoleChoices.MEMBER)
     photo = models.ImageField(upload_to="media", blank=True, null=True)
+    height = models.FloatField(null=True, blank=True)
+    weight = models.FloatField(null=True, blank=True)
+    objective = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now= True)
 
