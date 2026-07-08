@@ -1,5 +1,7 @@
 from django.db import models
 from accounts.models import Profile
+from django.conf import settings
+from datetime import timedelta
 
 class GymPlan(models.TextChoices):
     MONTHLY = "M", "Mensal"
@@ -22,7 +24,7 @@ class Membership(models.Model):
     status = models.BooleanField(default=True)
 
     def __str__(self):
-        return f'Nome: {self.profile.user.email} | Plano: {self.plan}'
+        return f'{self.profile.user.email} | Plano: {self.plan}'
     
 class Exercise(models.Model):
     name = models.CharField(max_length=155)
@@ -35,3 +37,26 @@ class Exercise(models.Model):
 
     def __str__(self):
         return f"Exercicio: {self.name} | Parte: {self.muscle_group}"
+
+class Workout(models.Model):
+    name = models.CharField(max_length=155, null = False, blank= False)
+    personal = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    member = models.ForeignKey(Membership, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.name}"
+    
+class WorkoutExercise(models.Model):
+    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+    series = models.IntegerField(default=1)
+    repetitions = models.IntegerField(default=1)
+    rest = models.DurationField(default = timedelta(seconds=30), help_text="Tempo de descanso (Ex: 30 segundos ou 2 minutos)")
+    order = models.PositiveSmallIntegerField()
+    workout = models.ForeignKey(Workout, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.exercise.name} | {self.series} | {self.repetitions}"
