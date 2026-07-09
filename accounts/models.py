@@ -18,7 +18,7 @@ class User(AbstractUser):
         return self.email
     
 class Profile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="Usuarios")
     role = models.CharField(max_length=1, choices=RoleChoices.choices, default=RoleChoices.MEMBER)
     photo = models.ImageField(upload_to="media", blank=True, null=True)
     height = models.FloatField(null=True, blank=True)
@@ -28,5 +28,9 @@ class Profile(models.Model):
     update_at = models.DateTimeField(auto_now= True)
 
     def __str__(self):
-        return f'{self.user.email} ({self.role})'
+        return f'Email: {self.user.email} | Cargo: {self.role}'
+
     
+    class Meta:
+        verbose_name = "Perfil"
+        verbose_name_plural = "Perfils"

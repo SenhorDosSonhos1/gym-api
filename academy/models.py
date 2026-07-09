@@ -18,7 +18,7 @@ class MuscleGroup(models.TextChoices):
     CORE = "A", "Abdômen"
 
 class Membership(models.Model):
-    profile = models.OneToOneField(Profile, on_delete=models.PROTECT)
+    profile = models.OneToOneField(Profile, on_delete=models.PROTECT, related_name="profile")
     created_at = models.DateTimeField(auto_now_add=True)
     plan = models.CharField(max_length=1, choices=GymPlan.choices, default=GymPlan.MONTHLY)
     status = models.BooleanField(default=True)
@@ -26,6 +26,11 @@ class Membership(models.Model):
     def __str__(self):
         return f'{self.profile.user.email} | Plano: {self.plan}'
     
+    class Meta:
+        verbose_name = 'Matricula'
+        verbose_name_plural = 'Matriculas'
+        ordering = ["status"]
+        
 class Exercise(models.Model):
     name = models.CharField(max_length=155)
     description = models.TextField()
@@ -36,27 +41,42 @@ class Exercise(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Exercicio: {self.name} | Parte: {self.muscle_group}"
+        return self.name
+    
+    class Meta:
+        verbose_name = 'Exercicio'
+        verbose_name_plural = 'Exercicios'
+        ordering = ["-created_at"]
 
 class Workout(models.Model):
     name = models.CharField(max_length=155, null = False, blank= False)
-    personal = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    personal = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="workouts")
     member = models.ForeignKey(Membership, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.name}"
+        return self.name
     
+    class Meta:
+        verbose_name = 'Treino'
+        verbose_name_plural = 'Treinos'
+        ordering = ["-created_at"]
+
 class WorkoutExercise(models.Model):
-    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE, related_name= "workout_exercises")
     series = models.IntegerField(default=1)
     repetitions = models.IntegerField(default=1)
     rest = models.DurationField(default = timedelta(seconds=30), help_text="Tempo de descanso (Ex: 30 segundos ou 2 minutos)")
     order = models.PositiveSmallIntegerField()
-    workout = models.ForeignKey(Workout, on_delete=models.CASCADE)
+    workout = models.ForeignKey(Workout, on_delete=models.CASCADE, related_name="Treino")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.exercise.name} | {self.series} | {self.repetitions}"
+    
+    class Meta:
+        verbose_name = 'Exercicio do Treino'
+        verbose_name_plural = 'Exercicios do Treino'
+        ordering = ["order"]

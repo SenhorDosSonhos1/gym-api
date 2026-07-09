@@ -8,6 +8,7 @@ admin.site.register(Exercise)
 class WorkoutAdmin(admin.ModelAdmin):
     list_display = ["name", "get_email_personal", "get_email_member", ]
     search_fields = ["name"]
+    ordering = ["name"]
 
     @admin.display(
        empty_value="???"
