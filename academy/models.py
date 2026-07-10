@@ -79,4 +79,4 @@ class WorkoutExercise(models.Model):
     class Meta:
         verbose_name = 'Exercicio do Treino'
         verbose_name_plural = 'Exercicios do Treino'
-        ordering = ["order"]
+        ordering = ["order"] 
